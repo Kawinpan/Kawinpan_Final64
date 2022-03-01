@@ -23,15 +23,15 @@ var httpsServer = https.createServer(credentials, app);
 //app.use(express.static(path.resolve(__dirname, '..', 'build')));
 
 const db = mysql.createConnection({
-    host: '172.25.240.1',
-    user: 'bonn',
+    host: '172.23.128.1',
+    user: 'kawin',
     password: '1234',
     database: 'testing'
 });
 // show data
 app.get('/data', function(req,res){
     console.log("Hello in /data ");
-    let sql = 'SELECT * FROM users;';
+    let sql = 'SELECT * FROM users ORDER BY users.birthprovince ASC ;';
     db.query(sql, (err, result)=>{
         if(err) throw err;
         console.log(result);
@@ -51,8 +51,8 @@ app.put('/delete', function(req, res) {
 
 //edit
 app.put('/data', function(req, res) {
-    var sql = 'UPDATE users SET firstname= ? , lastname = ? WHERE id = ?';
-    db.query(sql,[req.body.firstname,req.body.lastname,req.body.idkey],function (error, results) {
+    var sql = 'UPDATE users SET firstname= ? , lastname = ? , birthprovince = ? WHERE id = ?';
+    db.query(sql,[req.body.firstname,req.body.lastname,req.body.birthprovince,req.body.idkey],function (error, results) {
         if(error) throw error;
         res.send(JSON.stringify(results));
     });
@@ -62,9 +62,11 @@ app.put('/data', function(req, res) {
 app.post('/data', function(req, res){
     console.log(req.body);
     let data = {
+        Email:req.body.email,
         id:req.body.idkey,
         firstname:req.body.firstname,
-        lastname:req.body.lastname
+        lastname:req.body.lastname,
+        birthprovince:req.body.birthprovince
     };
     let sql = 'INSERT INTO users SET ?';
     db.query(sql, data, (err, result)=>{
